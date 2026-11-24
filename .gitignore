@@ -1,0 +1,16 @@
+/private/
+/build/
+/.venv/
+**/bin/
+**/obj/
+**/__pycache__/
+*.bin
+*.dat
+*.elf
+*.pdb
+*.exe
+*.dll
+*.log
+*.zip
+*.pcap*
+.env*
