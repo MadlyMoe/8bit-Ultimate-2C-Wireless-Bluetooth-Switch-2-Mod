@@ -1,15 +1,12 @@
 # Rebuild and verify
 
-Most owners only need [Prepare.ps1](../Prepare.ps1). It reconstructs the release image offline from your exact stock application plus the checked-in patch recipe. Once you have your backup, this path also works without any connected hardware:
+Most owners only need [Prepare.ps1](../Prepare.ps1). It reconstructs the release image offline from your exact stock application plus the checked-in patch recipe. Once the owner's verified backup is at `private/controller-original.bin`, prepare and test the package without a connected device:
 
 ```powershell
-New-Item -ItemType Directory -Force build | Out-Null
-dotnet build host-flash/ControllerFlash.csproj -c Release
-dotnet host-flash/bin/Release/net9.0/ControllerFlash.dll self-test private/controller-original.bin
-dotnet host-flash/bin/Release/net9.0/ControllerFlash.dll build-image private/controller-original.bin build/from-recipe.bin
+.\Prepare.ps1 -FromBackup
 ```
 
-Use a fresh output filename. The expected application SHA-256 is published in [INSTALL.md](INSTALL.md).
+This builds the Windows tools, runs the writer's simulated install and recovery checks, generates the image and verifies its hash. The expected application SHA-256 is published in [INSTALL.md](INSTALL.md).
 
 ## Compile the embedded source
 

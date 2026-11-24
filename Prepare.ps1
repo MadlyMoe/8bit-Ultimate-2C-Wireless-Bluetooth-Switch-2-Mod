@@ -2,7 +2,7 @@
 # Build the Windows tools and prepare an image from this controller's own backup.
 # All USB operations in this script are reads.
 [CmdletBinding()]
-param()
+param([switch]$FromBackup)
 $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 function Run-Dotnet {
@@ -18,8 +18,14 @@ try {
     New-Item -ItemType Directory -Force private,build | Out-Null
     Run-Dotnet build host/ControllerRead.csproj -c Release --nologo
     Run-Dotnet build host-flash/ControllerFlash.csproj -c Release --nologo
-    Run-Dotnet $reader identify
-    if (!(Test-Path -LiteralPath $original)) { Run-Dotnet $reader backup $original }
+    if ($FromBackup) {
+        if (!(Test-Path -LiteralPath $original -PathType Leaf)) {
+            throw "Put this controller's verified stock backup at $original before using -FromBackup."
+        }
+    } else {
+        Run-Dotnet $reader identify
+        if (!(Test-Path -LiteralPath $original)) { Run-Dotnet $reader backup $original }
+    }
     Run-Dotnet $writer self-test $original
     if (!(Test-Path -LiteralPath $image)) { Run-Dotnet $writer build-image $original $image }
     if ((Get-FileHash -LiteralPath $image).Hash -ne $required) {
